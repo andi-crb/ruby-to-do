@@ -3,6 +3,7 @@ module Menu
     "Welcome! This is a to do list! Please pick from one of the below options:
     1) Add
     2) Show
+    3) Write to a file
     Q) Quit"
   end
   def show
@@ -29,12 +30,18 @@ class List
   def show
     all_tasks
   end
+  def write_to_file(filename)
+    IO.write(filename, @all_tasks.map(&:to_s).join("\n"))
+  end
 end
 
 class Task
   attr_reader :description
   def initialize(description)
     @description = description
+  end
+  def to_s
+    description
   end
 end
 
@@ -48,6 +55,8 @@ if __FILE__ == $PROGRAM_NAME
           my_list.add(Task.new(prompt('What is the task you would like to add?')))
         when '2'
           puts my_list.show
+        when '3'
+          my_list.write_to_file(prompt('What is the filename to write to?'))
         else
           puts "Sorry, I don't understand that option."
       end
