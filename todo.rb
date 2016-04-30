@@ -4,6 +4,9 @@ module Menu
     1) Add
     2) Show
     3) Write to a file
+    4) Read from a file
+    5) Delete
+    6) Update
     Q) Quit"
   end
   def show
@@ -28,10 +31,21 @@ class List
     all_tasks << task
   end
   def show
-    all_tasks
+    all_tasks.map.with_index { |l, i| "(#{i.next}): #{1}"}
   end
   def write_to_file(filename)
     IO.write(filename, @all_tasks.map(&:to_s).join("\n"))
+  end
+  def read_from_file(filename)
+    IO.readlines(filename).each do |line|
+      add(Task.new(line.chomp))
+    end
+  end
+  def delete(index)
+    all_tasks.delete_at(index - 1)
+  end
+  def update(index, value)
+    all_tasks(index-1) = value
   end
 end
 
@@ -57,6 +71,17 @@ if __FILE__ == $PROGRAM_NAME
           puts my_list.show
         when '3'
           my_list.write_to_file(prompt('What is the filename to write to?'))
+        when '4'
+          begin
+            my_list.read_from_file(prompt('What is the filename to read from?'))
+          rescue Errno::ENOENT
+              puts 'File name not found, please verify your file name and path.'
+            end
+        when '5'
+          puts my_list.show
+          my_list.delete(prompt('Enter the number of the task you wish to delete').to_i)
+        when '6'
+          my_list.update(prompt('Which task do you want to modify').to_i, Task.new(prompt('Enter the update task info')))
         else
           puts "Sorry, I don't understand that option."
       end
